@@ -141,16 +141,24 @@ function tapView(label,msg,live,key,k,ch){app.classList.add('tapping');taps[key]
   const r=document.createElement('span');r.className='rip';$('ow').appendChild(r);setTimeout(()=>r.remove(),600)})}
 let tapQ=0;setInterval(()=>{if(tapQ){BUS.send({t:'tap',n:tapQ});tapQ=0}},200);
 /* phone microphone: loudness above this phone's own ambient level, 0..1, sent to the LED while it is this team's turn */
-const PM={on:false,err:0,busy:false,amb:null,an:null,buf:null,
- async start(){if(this.on||this.busy)return;this.busy=true;
-  try{const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
-   const ac=new (window.AudioContext||window.webkitAudioContext)();await ac.resume();const an=ac.createAnalyser();an.fftSize=1024;ac.createMediaStreamSource(st).connect(an);
-   this.an=an;this.buf=new Float32Array(an.fftSize);this.on=true;this.err=0}catch(e){this.err=1}
-  this.busy=false;if(cur)render(cur)},
+const PM={on:false,err:0,busy:false,amb:null,an:null,buf:null,ac:null,rs:[],ph:'',
+ /* v7.1: the AudioContext is created inside the tap itself (iPhone Safari keeps it muted otherwise) */
+ start(){if(this.on||this.busy)return;this.busy=true;let ac=null;
+  try{ac=this.ac||new (window.AudioContext||window.webkitAudioContext)();this.ac=ac;ac.resume()}catch(e){}
+  navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}}).then(st=>{
+   if(!ac)throw 0;const an=ac.createAnalyser();an.fftSize=1024;ac.createMediaStreamSource(st).connect(an);ac.resume();
+   this.an=an;this.buf=new Float32Array(an.fftSize);this.on=true;this.err=0}).catch(()=>{this.err=1}).finally(()=>{this.busy=false;if(cur)render(cur)})},
  db(){this.an.getFloatTimeDomainData(this.buf);let s=0;for(const x of this.buf)s+=x*x;return 20*Math.log10(Math.sqrt(s/this.buf.length)+1e-9)}};
-setInterval(()=>{if(!PM.on)return;const d=PM.db();if(PM.amb==null)PM.amb=d;
- const live=cur&&cur.v==='roar'&&cur.phase==='go'&&cur.team===my;
- if(!live){PM.amb=PM.amb*.92+Math.min(d,PM.amb+3)*.08;return}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&PM.ac)try{PM.ac.resume()}catch(e){}});
+document.addEventListener('pointerdown',()=>{if(PM.ac&&PM.ac.state!=='running')try{PM.ac.resume()}catch(e){}},{passive:true});
+/* v7.1 ambient: measured while this team counts down 3-2-1 (everyone quiet), not while other teams shout.
+   Outside that, it only drifts down quickly / up very slowly, so other teams' cheering can't raise it. */
+setInterval(()=>{if(!PM.on)return;const d=PM.db();if(!isFinite(d)||d<-140)return;if(PM.amb==null)PM.amb=d;
+ const mine=cur&&cur.v==='roar'&&cur.team===my,ph=mine?cur.phase:'';
+ if(ph==='ready'){if(PM.ph!=='ready')PM.rs=[];PM.rs.push(d)}
+ if(ph==='go'&&PM.ph==='ready'&&PM.rs.length>=3){const r=PM.rs.slice().sort((a,b)=>a-b);PM.amb=Math.min(PM.amb+6,r[Math.floor(r.length*.3)])}
+ PM.ph=ph;
+ if(ph!=='go'){PM.amb=d<PM.amb?PM.amb*.8+d*.2:PM.amb+Math.min(d-PM.amb,.02);return}
  const n=Math.max(0,Math.min(1,(d-PM.amb-6)/30));if(Date.now()-(PM.ls||0)>=240){PM.ls=Date.now();BUS.send({t:'lvl',v:+n.toFixed(3)})}const b=document.getElementById('mym');if(b)b.style.width=n*100+'%'},120);
 const micBtn=()=>`<button class="ans" id="micb" style="display:flex;justify-content:center;gap:8px;font-size:15px;padding:14px;border-color:var(--orange)">${PM.err?'เปิดไมค์ไม่ได้ ลองแตะอีกครั้ง':'🎤 แตะเพื่อเปิดไมค์ (ใช้ในด่านตะโกน)'}</button>`;
 function bindMic(){const b=document.getElementById('micb');if(b)b.onclick=()=>{b.textContent='กำลังเปิดไมค์…';PM.start()}}
