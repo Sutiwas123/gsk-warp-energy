@@ -7,3 +7,7 @@ v7 adds a realtime link so phones and the LED connect across devices
 
 Deploy: `npx wrangler deploy` in this folder, or connect this repo/branch in
 Cloudflare → Workers & Pages → Create → Import a repository.
+
+Cloudflare Workers Builds: production branch = `three-rockets-v7`, deploy
+command `npx wrangler deploy`. Preview builds (`wrangler preview`) don't
+support the Durable Object yet, so test on the production URL.
