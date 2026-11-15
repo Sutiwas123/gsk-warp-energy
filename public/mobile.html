@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#01030a">
+<title>Three Rockets · Mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@200;300;400;600;700&family=IBM+Plex+Sans+Thai:wght@300;400;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Player phone. Full-bleed cinematic background, minimal glass controls, one big reactor button for tap stages. Follows the LED page's state. */
+:root{
+  --cyan:#4fd8ff; --white:#f4f7ff; --orange:#ff7a1a; --good:#5ef0a0; --bad:#ff5a6a;
+  --ink:#eef3ff; --dim:#a6b5d6; --line:#ffffff24; --tc:var(--orange);
+  --disp:"Sora","IBM Plex Sans Thai",system-ui,sans-serif; --th:"IBM Plex Sans Thai","Sora",system-ui,sans-serif; --mono:"JetBrains Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:#01030a;color:var(--ink);font:400 16px/1.5 var(--th);overflow:hidden}
+.app{position:relative;height:100dvh;max-width:520px;margin:0 auto;overflow:hidden;isolation:isolate}
+.bg{position:absolute;inset:-6%;z-index:-3;background:#020818 url(assets/phone_bg.jpg) center bottom/cover no-repeat;animation:kb 24s ease-in-out infinite alternate;filter:brightness(.8) saturate(1.1)}
+@keyframes kb{from{transform:scale(1.02)}to{transform:scale(1.12) translateY(-2%)}}
+.tint{position:absolute;inset:0;z-index:-2;background:radial-gradient(120% 60% at 50% 0%,#01030ad0,transparent 70%),linear-gradient(180deg,transparent 40%,#01030ae0);transition:background 1s}
+.glow{position:absolute;inset:0;z-index:-2;background:radial-gradient(80% 45% at 50% 62%,color-mix(in srgb,var(--tc) 30%,transparent),transparent 70%);opacity:.0;transition:opacity 1s,background 1s}
+.app.tapping .glow{opacity:1}
+.grain{position:absolute;inset:-50%;z-index:-1;pointer-events:none;opacity:.1;mix-blend-mode:overlay;animation:grain .45s steps(4) infinite;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+@keyframes grain{25%{transform:translate(-4%,2%)}50%{transform:translate(3%,-3%)}75%{transform:translate(-2%,-2%)}}
+
+header .st span{font:400 12px/1 var(--th);letter-spacing:0;text-transform:none}
+header{position:absolute;left:0;right:0;top:0;padding:calc(env(safe-area-inset-top,0px) + 14px) 18px 0;display:flex;justify-content:space-between;align-items:center;font:500 10px/1 var(--mono);letter-spacing:.28em;color:#dfe8ffb3;text-transform:uppercase}
+.st{display:flex;align-items:center;gap:7px}
+.st i{width:7px;height:7px;border-radius:50%;background:#f5b041;box-shadow:0 0 8px #f5b041}
+.st.on i{background:var(--good);box-shadow:0 0 8px var(--good)}
+header img{height:18px}
+
+#v{position:absolute;inset:0;padding:calc(env(safe-area-inset-top,0px) + 56px) 22px calc(env(safe-area-inset-bottom,0px) + 26px);display:flex;flex-direction:column;gap:14px;text-align:center}
+.k{font:500 10.5px/1.4 var(--mono);letter-spacing:.32em;color:var(--cyan);text-transform:uppercase}
+h1{margin:0;font:300 27px/1.2 var(--disp);letter-spacing:-.01em;text-wrap:balance}
+h1 b{font-weight:600}
+p{margin:0;color:var(--dim);font-weight:300}
+.sp{flex:1}
+.rv{animation:rv 1s cubic-bezier(.2,.7,.1,1) both;animation-delay:var(--d,0s)}
+@keyframes rv{from{opacity:0;transform:translateY(12px);filter:blur(6px)}to{opacity:1;transform:none;filter:none}}
+
+.chip{align-self:center;display:inline-flex;align-items:center;gap:8px;padding:4px 14px 4px 4px;border-radius:999px;font:500 10.5px/1 var(--mono);letter-spacing:.25em;color:var(--c);background:#0a1226b3;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);backdrop-filter:blur(10px)}
+.chip img{width:26px;height:26px}
+
+.team{display:grid;grid-template-columns:64px 1fr auto;gap:14px;align-items:center;width:100%;padding:12px 16px 12px 10px;border-radius:18px;background:#0a1226a6;border:1px solid #ffffff1f;backdrop-filter:blur(14px);color:var(--ink);text-align:left;font:inherit;cursor:pointer;position:relative;overflow:hidden}
+.team::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 22%,transparent),transparent 60%);opacity:.8}
+.team img{width:64px;height:64px;position:relative}
+.team span{position:relative;font:600 18px/1.1 var(--disp);letter-spacing:.06em;color:var(--c)}
+.team small{display:block;margin-top:5px;font:300 13px/1 var(--th);color:var(--dim);letter-spacing:0}
+.team em{position:relative;font:400 18px/1 var(--mono);font-style:normal;color:#ffffff80}
+.team:active{transform:scale(.98)}
+
+.ans{display:grid;grid-template-columns:34px 1fr;align-items:center;gap:10px;width:100%;padding:16px 16px;border-radius:16px;background:#0a1226b3;border:1px solid #ffffff24;backdrop-filter:blur(12px);color:var(--ink);font:400 17px/1.3 var(--disp);text-align:left;cursor:pointer}
+.ans b{font:500 12px/1 var(--mono);color:var(--orange);letter-spacing:.2em}
+.ans.sel{border-color:var(--orange);background:linear-gradient(90deg,#ff7a1a40,#0a1226b3)}
+.ans:disabled:not(.sel){opacity:.4}
+.tline{height:2px;background:#ffffff1f;overflow:hidden;border-radius:2px}
+.tline div{height:100%;background:var(--orange);box-shadow:0 0 8px var(--orange);width:100%}
+
+.big{font:200 64px/1 var(--disp);letter-spacing:-.02em}
+.num{font:300 54px/1 var(--mono)}
+.res{font:600 34px/1.1 var(--disp)}
+
+.hero{width:150px;margin:0 auto;animation:hover 3s ease-in-out infinite alternate;filter:drop-shadow(0 18px 24px #000) drop-shadow(0 0 22px color-mix(in srgb,var(--c) 45%,transparent))}
+@keyframes hover{to{transform:translateY(-10px)}}
+
+/* reactor button */
+.orbw{position:relative;margin:auto;width:min(68vw,250px);aspect-ratio:1}
+.orb{position:absolute;inset:0;border-radius:50%;border:0;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;color:#04101f;font:700 28px/1 var(--disp);letter-spacing:.06em;
+  background:
+   radial-gradient(circle at 50% 32%,#ffffffee 0 8%,transparent 30%),
+   radial-gradient(circle at 50% 50%,color-mix(in srgb,var(--tc) 70%,#fff) 0 30%,var(--tc) 52%,color-mix(in srgb,var(--tc) 45%,#000) 72%,#05070d 74%,#1d2433 80%,#0a0e18 86%);
+  box-shadow:0 0 0 1px #ffffff30,0 0 50px -6px var(--tc),0 0 120px -30px var(--tc),inset 0 -14px 30px #0008;transition:transform .08s,filter .2s}
+.orbw::before{content:"";position:absolute;inset:-14px;border-radius:50%;background:conic-gradient(from 0deg,transparent,color-mix(in srgb,var(--tc) 80%,transparent),transparent 30%);animation:spin 3.2s linear infinite;opacity:.6;mask:radial-gradient(circle,transparent 66%,#000 67%,#000 69%,transparent 70%);-webkit-mask:radial-gradient(circle,transparent 66%,#000 67%,#000 69%,transparent 70%)}
+@keyframes spin{to{transform:rotate(1turn)}}
+.orb:active{transform:scale(.94);filter:brightness(1.2)}
+.orb:disabled{filter:grayscale(.7) brightness(.5);cursor:default}
+.rip{position:absolute;left:50%;top:50%;width:100%;aspect-ratio:1;border-radius:50%;border:2px solid var(--tc);transform:translate(-50%,-50%) scale(.6);opacity:.9;pointer-events:none;animation:rip .6s ease-out forwards}
+@keyframes rip{to{transform:translate(-50%,-50%) scale(1.5);opacity:0}}
+
+.mym{height:10px;border-radius:6px;background:#ffffff1f;overflow:hidden}
+.mym div{height:100%;width:0;background:linear-gradient(90deg,var(--tc),#fff);box-shadow:0 0 12px var(--tc);transition:width .1s linear}
+.help{font-size:14px;color:var(--dim);padding:14px;border:1px solid var(--line);border-radius:14px;background:#0a1226b3;text-align:left}
+.help a{color:var(--cyan)}
+button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.bg,.grain,.hero,.orbw::before{animation:none}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="bg"></div><div class="tint"></div><div class="glow"></div><div class="grain"></div>
+  <header><span class="st" id="st"><i></i><span id="stt">กำลังหา LED</span></span><img src="assets/gsk_logo.webp" alt="GSK"></header>
+  <div id="v"></div>
+</div>
+<script>
+
+/* ---- realtime link (v7): WebSocket to the Cloudflare Durable Object at ./ws. Works across devices. Falls back silently when opened as a local file. ---- */
+function RT(role,id,deliver){const ok=/^https?:$/.test(location.protocol)&&!/[?&]local=1/.test(location.search);let ws=null,q=[],open=false,tries=0,st='off';
+ const room=(new URLSearchParams(location.search).get('room')||'main');
+ const set=s=>{st=s;try{document.dispatchEvent(new CustomEvent('rt',{detail:s}))}catch(e){}};
+ function connect(){if(!ok)return;if(ws&&ws.readyState<2)return;set('connecting');const u=new URL('ws',location.href);u.protocol=location.protocol==='https:'?'wss:':'ws:';u.search='?role='+role+'&id='+encodeURIComponent(id)+'&room='+encodeURIComponent(room);
+  try{ws=new WebSocket(u.href)}catch(e){return retry()}
+  ws.onopen=()=>{open=true;tries=0;set('online');const b=q;q=[];b.forEach(s=>ws.send(s))};
+  ws.onmessage=e=>{if(e.data==='pong')return;try{deliver(JSON.parse(e.data))}catch(x){}};
+  ws.onclose=()=>{open=false;set('offline');retry()};ws.onerror=()=>{try{ws.close()}catch(e){}}}
+ function retry(){tries++;setTimeout(connect,Math.min(5000,400*tries)+Math.random()*400)}
+ setInterval(()=>{if(open)try{ws.send('ping')}catch(e){}},20000);
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden)connect()});
+ connect();
+ return{send(m){if(!ok)return;const s=JSON.stringify(m);if(open&&ws.readyState===1)ws.send(s);else{q.push(s);if(q.length>60)q.shift()}},get state(){return st},get enabled(){return ok}}}
+const BUS=(()=>{let id;try{id=sessionStorage.getItem('rk-id')}catch(e){}if(!id){id='ph-'+Math.random().toString(36).slice(2,8);try{sessionStorage.setItem('rk-id',id)}catch(e){}}
+ const seen=new Set(),hs=[];let bc=null;try{bc=new BroadcastChannel('gsk-rockets')}catch(e){}
+ const deliver=m=>{if(!m||m.from===id||seen.has(m.mid)||(m.to&&m.to!==id))return;seen.add(m.mid);hs.forEach(h=>h(m))};
+ if(bc)bc.onmessage=e=>deliver(e.data);
+ addEventListener('message',e=>{if(e.data&&e.data.__rk)deliver(e.data.__rk)});
+ const NET=RT('phone',id,deliver);
+ return{id,net:NET,send(m){m.from=id;if(m.team==null&&typeof my!=='undefined'&&my!=null)m.team=my;m.mid=id+Math.random().toString(36).slice(2,9);if(bc)bc.postMessage(m);NET.send(m);if(parent!==window)try{parent.postMessage({__rk:m},'*')}catch(e){}},on(h){hs.push(h)}}})();
+
+const A='assets/';
+const T=[{k:'innovate',name:'INNOVATE',th:'ทีมฟ้า',c:'#4fd8ff'},{k:'execute',name:'EXECUTE',th:'ทีมขาว',c:'#f4f7ff'},{k:'accelerate',name:'ACCELERATE',th:'ทีมส้ม',c:'#ff7a1a'}];
+const BADGE=i=>A+'badge_'+T[i].k+'.webp', ROCKET=i=>A+'rocket_'+T[i].k+'.webp';
+const $=id=>document.getElementById(id);
+let my=null,cur=null,linked=false,answers={},taps={},qTimer=null;
+const app=$('app'),V=$('v');
+const chip=()=>my==null?'':`<span class="chip rv" style="--c:${T[my].c}"><img src="${BADGE(my)}" alt="">${T[my].name} CREW</span>`;
+const H=h=>{V.innerHTML=h};
+const tc=c=>app.style.setProperty('--tc',c);
+
+function picker(){app.classList.remove('tapping');
+ H(`<div class="k rv">GSK Kickoff 2027 · Boarding</div><h1 class="rv" style="--d:.1s">เลือก<b>ทีม</b>ตามที่ MC ประกาศ</h1><div class="sp"></div>
+ ${T.map((t,i)=>`<button class="team rv" style="--c:${t.c};--d:${.2+i*.12}s" data-i="${i}"><img src="${BADGE(i)}" alt=""><span>${t.name}<small>${t.th}</small></span><em>›</em></button>`).join('')}<div class="sp"></div>`);
+ V.querySelectorAll('.team').forEach(b=>b.onclick=()=>{my=+b.dataset.i;tc(T[my].c);BUS.send({t:'join',team:my});buzz(20);render(cur||{v:'board'})})}
+
+function tapView(label,msg,live,key,k,ch){app.classList.add('tapping');taps[key]=taps[key]||0;
+ H(`<div class="k">${k||''}</div>${ch||chip()}<p id="pm">${msg||''}</p><div class="orbw" id="ow"><button class="orb" id="orb" ${live?'':'disabled'}>${label}</button></div><div class="num" id="tn">${taps[key]}</div><p>ครั้งที่คุณแตะ</p>`);
+ $('orb').addEventListener('pointerdown',e=>{e.preventDefault();const ok=(cur.v==='tap'&&cur.live)||cur.v==='roar'||(cur.v==='final'&&cur.phase==='go');if(!ok)return;taps[key]++;$('tn').textContent=taps[key];tapQ++;buzz(8);
+  const r=document.createElement('span');r.className='rip';$('ow').appendChild(r);setTimeout(()=>r.remove(),600)})}
+let tapQ=0;setInterval(()=>{if(tapQ){BUS.send({t:'tap',n:tapQ});tapQ=0}},200);
+/* phone microphone: loudness above this phone's own ambient level, 0..1, sent to the LED while it is this team's turn */
+const PM={on:false,err:0,busy:false,amb:null,an:null,buf:null,
+ async start(){if(this.on||this.busy)return;this.busy=true;
+  try{const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:false,noiseSuppression:false,autoGainControl:false}});
+   const ac=new (window.AudioContext||window.webkitAudioContext)();await ac.resume();const an=ac.createAnalyser();an.fftSize=1024;ac.createMediaStreamSource(st).connect(an);
+   this.an=an;this.buf=new Float32Array(an.fftSize);this.on=true;this.err=0}catch(e){this.err=1}
+  this.busy=false;if(cur)render(cur)},
+ db(){this.an.getFloatTimeDomainData(this.buf);let s=0;for(const x of this.buf)s+=x*x;return 20*Math.log10(Math.sqrt(s/this.buf.length)+1e-9)}};
+setInterval(()=>{if(!PM.on)return;const d=PM.db();if(PM.amb==null)PM.amb=d;
+ const live=cur&&cur.v==='roar'&&cur.phase==='go'&&cur.team===my;
+ if(!live){PM.amb=PM.amb*.92+Math.min(d,PM.amb+3)*.08;return}
+ const n=Math.max(0,Math.min(1,(d-PM.amb-6)/30));if(Date.now()-(PM.ls||0)>=240){PM.ls=Date.now();BUS.send({t:'lvl',v:+n.toFixed(3)})}const b=document.getElementById('mym');if(b)b.style.width=n*100+'%'},120);
+const micBtn=()=>`<button class="ans" id="micb" style="display:flex;justify-content:center;gap:8px;font-size:15px;padding:14px;border-color:var(--orange)">${PM.err?'เปิดไมค์ไม่ได้ ลองแตะอีกครั้ง':'🎤 แตะเพื่อเปิดไมค์ (ใช้ในด่านตะโกน)'}</button>`;
+function bindMic(){const b=document.getElementById('micb');if(b)b.onclick=()=>{b.textContent='กำลังเปิดไมค์…';PM.start()}}
+function buzz(ms){try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}}
+
+function render(v){cur=v;clearInterval(qTimer);
+ if(my==null&&v.v!=='final'){picker();return}
+ if(my!=null)tc(T[my].c);
+ app.classList.remove('tapping');
+ const t=my!=null?T[my]:null;
+ switch(v.v){
+ case 'board':H(`<div class="k rv">Boarding complete</div>${chip()}<h1 class="rv" style="--d:.15s">ขึ้นยาน<b>เรียบร้อย</b></h1><p class="rv" style="--d:.25s">มองจอใหญ่ รอ MC เริ่มภารกิจ</p><div class="sp"></div><img class="hero" style="--c:${t.c}" src="${ROCKET(my)}" alt=""><div class="sp"></div>${PM.on?'':micBtn()}<button class="ans" id="sw" style="justify-content:center;display:flex;font-size:14px;padding:12px">เปลี่ยนทีม</button>`);bindMic();$('sw').onclick=()=>{my=null;picker()};break;
+ case 'wait':H(`<div class="k rv">${v.k}</div>${chip()}<div class="sp"></div><h1 class="rv" style="--d:.15s">${v.h}</h1><p class="rv" style="--d:.25s">${v.p||''}</p><div class="sp"></div>${String(v.k).startsWith('STAGE 03')&&!PM.on?micBtn():''}`);bindMic();break;
+ case 'quiz':{const sel=answers[v.qk];
+  H(`<div class="k">${v.k}</div>${chip()}<h1 class="rv" style="font-size:22px">${v.q}</h1>${v.a.map((a,j)=>`<button class="ans rv ${sel===j?'sel':''}" style="--d:${.1+j*.08}s" data-j="${j}" ${sel!=null?'disabled':''}><b>${'ABC'[j]}</b>${a}</button>`).join('')}<div class="sp"></div><div class="tline"><div id="ql"></div></div><p id="qs">${sel!=null?'ส่งคำตอบแล้ว ลุ้นที่จอใหญ่':'เลือกคำตอบภายใน '+v.dur+' วินาที'}</p>`);
+  const t0=v._t0||(v._t0=Date.now());qTimer=setInterval(()=>{const l=Math.max(0,1-(Date.now()-t0)/1000/v.dur);const e=$('ql');if(e)e.style.width=l*100+'%';if(!l)clearInterval(qTimer)},100);
+  V.querySelectorAll('.ans').forEach(b=>b.onclick=()=>{if(answers[v.qk]!=null)return;answers[v.qk]=+b.dataset.j;BUS.send({t:'ans',qk:v.qk,j:+b.dataset.j});buzz(15);b.classList.add('sel');V.querySelectorAll('.ans').forEach(x=>x.disabled=true);$('qs').textContent='ส่งคำตอบแล้ว ลุ้นที่จอใหญ่'});break}
+ case 'reveal':{const a=answers[v.qk];
+  H(`<div class="k">STAGE 01 · INNOVATE</div>${chip()}<div class="sp"></div>${a==null?`<div class="res rv">ไม่ทันตอบ</div>`:`<p class="rv">คำตอบของคุณ</p><div class="big rv" style="--d:.1s">${'ABC'[a]}</div>`}<div class="sp"></div><p class="rv" style="--d:.3s">ดูเฉลยที่จอใหญ่</p><div class="sp"></div>`);break}
+ case 'tap':tapView(v.label,v.msg,v.live,v.key,v.k);break;
+ case 'fuelEnd':{const n=taps.fuel||0;H(`<div class="k">STAGE 02 COMPLETE</div>${chip()}<div class="sp"></div><div class="num rv">${n}</div><p class="rv">คุณแตะไป ${n} ครั้ง</p><div class="sp"></div><p class="rv" style="--d:.3s">ดูผลที่จอใหญ่</p><div class="sp"></div>`);break}
+ case 'roar':{const mine=v.team===my,R=`STAGE 03 · ROUND ${v.round+1}/2`;
+  if(mine&&v.phase==='go'&&!PM.on){taps['roar']=0;tapView('ตะโกน!','ไมค์ยังไม่เปิด ตะโกนพร้อมแตะรัวๆ แทน',true,'roar',R);V.insertAdjacentHTML('beforeend',micBtn());bindMic();break}
+  if(mine&&v.phase==='go'){H(`<div class="k">${R}</div>${chip()}<div class="sp"></div><div class="big rv" style="font-size:72px">🎤</div><h1 class="rv" style="--d:.1s"><b>ตะโกนเลย!</b><br>“ACCELERATE!”</h1><p class="rv" style="--d:.2s">ตะโกนใส่มือถือ ยิ่งดังยิ่งชาร์จเร็ว</p><div class="sp"></div><p>เสียงของคุณ</p><div class="mym"><div id="mym"></div></div>`);buzz([100,50,100]);break}
+  H(`<div class="k">${R}</div>${chip()}<div class="sp"></div><img src="${BADGE(v.team)}" alt="" class="rv" style="width:120px;margin:0 auto"><h1 class="rv" style="--d:.15s">ตาของ <b style="color:${T[v.team].c}">${T[v.team].name}</b></h1>${v.phase==='ready'?`<div class="num rv">${v.c}</div><p>${mine?'เตรียมตัว ลุกขึ้นยืน! อยู่เงียบๆ ก่อนนะ':'รอ MC ส่งสัญญาณ'}</p>`:`<p class="rv" style="--d:.25s">${mine?'':'ส่งเสียงเชียร์ได้'}</p>`}<div class="sp"></div>${mine&&!PM.on?micBtn():''}`);bindMic();if(mine&&v.phase==='ready')buzz(30);break}
+ case 'rank':{H(`<div class="k">RESULTS</div>${chip()}<div class="sp"></div><h1 class="rv">ประกาศผล<b>ที่จอใหญ่</b></h1><p class="rv" style="--d:.2s">อย่าเพิ่งไป รอ MC ประกาศภารกิจสุดท้าย</p><div class="sp"></div>`);break}
+ case 'final':{tc('#ffb340');const crew=`<span class="chip rv" style="--c:#f4f7ff"><img src="${BADGE(0)}" alt=""><img src="${BADGE(1)}" alt="" style="margin-left:-16px"><img src="${BADGE(2)}" alt="" style="margin-left:-16px">ONE CREW · 150</span>`;
+  if(v.phase==='done'){app.classList.remove('tapping');H(`<div class="k">FINAL MISSION</div><div class="sp"></div><div class="num rv">${taps.final||0}</div><p class="rv">คุณแตะไป ${taps.final||0} ครั้ง</p><div class="sp"></div><p class="rv" style="--d:.3s">ดูจอใหญ่</p><div class="sp"></div><div class="k" style="color:#fff"><span style="color:var(--cyan)">INNOVATE</span> • EXECUTE • <span style="color:var(--orange)">ACCELERATE</span></div>`);buzz(60);break}
+  const msg=v.phase==='count'?'นับพร้อมกัน… '+v.c:v.phase==='go'?'แตะรัวๆ พร้อมกันทั้งห้อง!':'รอนับถอยหลังพร้อมกันทั้งห้อง';
+  tapView('พลัง!',msg,v.phase==='go','final','FINAL MISSION',crew);break}
+ }
+}
+
+BUS.on(m=>{
+ if(m.t==='view'){if(!linked){linked=true;$('st').classList.add('on');$('stt').textContent='เชื่อมต่อแล้ว'}
+  if(my!=null&&!cur)BUS.send({t:'join',team:my});
+  const same=cur&&cur.v===m.view.v&&cur.v==='tap'&&cur.key===m.view.key;
+  if(same){cur=m.view;const o=$('orb');if(o)o.disabled=!m.view.live;const pm=$('pm');if(pm)pm.textContent=m.view.msg;return}
+  if(cur&&cur.v==='final'&&m.view.v==='final'&&m.view.phase!=='done'&&$('orb')){cur=m.view;$('orb').disabled=m.view.phase!=='go';$('pm').textContent=m.view.phase==='count'?'นับพร้อมกัน… '+m.view.c:m.view.phase==='go'?'แตะรัวๆ พร้อมกันทั้งห้อง!':'รอนับถอยหลังพร้อมกันทั้งห้อง';return}
+  if(m.view.v==='quiz'&&cur&&cur.v==='quiz'&&cur.qk===m.view.qk)return;
+  render(m.view)}
+ else if(m.t==='reset'){my=null;answers={};taps={};cur=null;picker()}
+});
+
+picker();
+BUS.send({t:'hello'});
+const hi=setInterval(()=>{if(linked){clearInterval(hi);return}BUS.send({t:'hello'})},1500);
+setTimeout(()=>{if(linked)return;$('stt').textContent='ยังไม่พบจอ LED';
+ V.insertAdjacentHTML('beforeend',`<div class="help">ยังไม่พบจอ LED รอสักครู่ หรือแจ้งทีมงานหน้าเวที</div>`)},4000);
+</script>
+</body>
+</html>
